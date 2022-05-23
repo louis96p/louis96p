@@ -14,13 +14,13 @@ Company_kpi= pd.DataFrame(Company_kpi_read)
 Company_kpi['date']= Company_kpi['date'].str[:10]
 
 
-Company_price_dcf_read = pd.read_csv(r"C:\\Users\\DELPILL2\\OneDrive - EY\\Documents\\Privat\\Python\\Sample\\StockKpi\\companystock_dfc_2.csv")
+Company_price_dcf_read = pd.read_csv(r"C:\\Users\\DELPILL2\\OneDrive - EY\\Documents\\Privat\\Python\\Sample\\StockKpi\\companystock_dfc.csv")
 Company_price_dcf= pd.DataFrame(Company_price_dcf_read).sort_values(by='date', ascending=True)
 Company_price_dcf['date']= Company_price_dcf['date'].str[:10]
 
 
 
-Company_Profile_read = pd.read_csv (r"C:\\Users\\DELPILL2\\OneDrive - EY\\Documents\\Privat\\Python\\Sample\\CProfile\\companyprofileTotal.csv")
+Company_Profile_read = pd.read_csv (r"C:\\Users\\DELPILL2\\OneDrive - EY\\Documents\\Privat\\Python\\Sample\\StockKpi\\companyprofileTotal_1.csv")
 Company_Profile= pd.DataFrame(Company_Profile_read, columns =["symbol","StockType","sector"])
 
 Stock_merge = Company_kpi.merge(Company_price_dcf, how='left', left_on=['date', 'symbol'], right_on=['date', 'symbol'])
@@ -52,32 +52,31 @@ Stock_merge_future.pop("FutureDate")
 
 
 StockTotal = pd.merge(Stock_merge_future, Company_Profile, on="symbol")
-
+StockTotal_R = StockTotal.replace('Financial', "Financial Services").replace('Textiles, Apparel & Luxury Goods', "Consumer products").replace('Road & Rail', "Logistics & Transportation").replace('Aerospace & Defense', "Airlines").replace('Banking', "Financial Services").replace('Construction', "Building").replace('Telecommunication', "Technology").replace('Professional Services', "Services") 
 #Filter by sector
-Sector = StockTotal.groupby(['sector','date_new']).mean()
+Sector = StockTotal_R.groupby(['sector','date_new']).mean()
 Sector.pop("price")
 Sector.pop("FuturePrice")
 print(Sector.dtypes) 
-Stock_sector = StockTotal.merge(Sector, how='left', left_on=['date_new', 'sector'], right_on=['date_new', 'sector'])
+Stock_sector = StockTotal_R.merge(Sector, how='left', left_on=['date_new', 'sector'], right_on=['date_new', 'sector'])
 print(Stock_sector) 
 
 
 
-#W_CompanyInfo.to_csv (r"C:\\Users\\DELPILL2\\OneDrive - EY\\Documents\\Privat\\Python\\Sample\\CProfile\\companyprofile_250T", index = None)
-Stock_sector['netIncomePerShare_S'] = Stock_sector ['netIncomePerShare_x'] - Stock_sector ['netIncomePerShare_y']
-Stock_sector['operatingCashFlowPerShare_S'] = Stock_sector ['operatingCashFlowPerShare_x'] -  Stock_sector ['operatingCashFlowPerShare_y']
-Stock_sector ['peRatio_S'] = Stock_sector ['peRatio_x'] -  Stock_sector ['peRatio_y']
-Stock_sector ['pbRatio_S'] = Stock_sector ['pbRatio_x'] -  Stock_sector ['pbRatio_y']
-Stock_sector ['evToSales_S'] = Stock_sector ['evToSales_x'] -  Stock_sector ['evToSales_y']
-Stock_sector ['enterpriseValueOverEBITDA_S'] = Stock_sector ['enterpriseValueOverEBITDA_x'] -  Stock_sector ['enterpriseValueOverEBITDA_y']
-Stock_sector ['debtToEquity_S'] = Stock_sector ['debtToEquity_x'] -  Stock_sector ['debtToEquity_y']
-Stock_sector ['workingCapital_S'] = Stock_sector ['workingCapital_x'] -  Stock_sector ['workingCapital_y']
-Stock_sector ['debtToAssets_S'] = Stock_sector ['debtToAssets_x'] -  Stock_sector ['debtToAssets_y']
-Stock_sector ['currentRatio_S'] = Stock_sector ['currentRatio_x'] -  Stock_sector ['currentRatio_y']
-Stock_sector ['payoutRatio_S'] = Stock_sector ['payoutRatio_x'] -  Stock_sector ['payoutRatio_y']
-Stock_sector ['roe_S'] = Stock_sector ['roe_x'] -  Stock_sector ['roe_y']
-Stock_sector ['roic_S'] = Stock_sector ['roic_x'] - Stock_sector ['roic_y']
-Stock_sector ['investedCapital_S'] = Stock_sector ['investedCapital_x'] -  Stock_sector ['investedCapital_y']
+Stock_sector['netIncomePerShare_S'] = Stock_sector ['netIncomePerShare_y'] - Stock_sector ['netIncomePerShare_x']
+Stock_sector['operatingCashFlowPerShare_S'] = Stock_sector ['operatingCashFlowPerShare_x'] -  Stock_sector ['operatingCashFlowPerShare_x']
+Stock_sector ['peRatio_S'] = Stock_sector ['peRatio_y'] -  Stock_sector ['peRatio_x']
+Stock_sector ['pbRatio_S'] = Stock_sector ['pbRatio_y'] -  Stock_sector ['pbRatio_x']
+Stock_sector ['evToSales_S'] = Stock_sector ['evToSales_y'] -  Stock_sector ['evToSales_x']
+Stock_sector ['enterpriseValueOverEBITDA_S'] = Stock_sector ['enterpriseValueOverEBITDA_y'] -  Stock_sector ['enterpriseValueOverEBITDA_x']
+Stock_sector ['debtToEquity_S'] = Stock_sector ['debtToEquity_y'] -  Stock_sector ['debtToEquity_x']
+Stock_sector ['workingCapital_S'] = Stock_sector ['workingCapital_y'] -  Stock_sector ['workingCapital_x']
+Stock_sector ['debtToAssets_S'] = Stock_sector ['debtToAssets_y'] -  Stock_sector ['debtToAssets_x']
+Stock_sector ['currentRatio_S'] = Stock_sector ['currentRatio_y'] -  Stock_sector ['currentRatio_x']
+Stock_sector ['payoutRatio_S'] = Stock_sector ['payoutRatio_y'] -  Stock_sector ['payoutRatio_x']
+Stock_sector ['roe_S'] = Stock_sector ['roe_y'] -  Stock_sector ['roe_x']
+Stock_sector ['roic_S'] = Stock_sector ['roic_y'] - Stock_sector ['roic_x']
+Stock_sector ['investedCapital_S'] = Stock_sector ['investedCapital_y'] -  Stock_sector ['investedCapital_x']
 
 print (Stock_sector.dtypes)
 StockTotal_filtered = pd.DataFrame(Stock_sector , columns=["symbol","date_new","period","StockType","sector","revenuePerShare_x","netIncomePerShare_x","operatingCashFlowPerShare_x","freeCashFlowPerShare_x","bookValuePerShare_x",
@@ -86,8 +85,13 @@ StockTotal_filtered = pd.DataFrame(Stock_sector , columns=["symbol","date_new","
 "operatingCashFlowPerShare_S","peRatio_S","pbRatio_S","evToSales_S",
 "enterpriseValueOverEBITDA_S","debtToEquity_S","workingCapital_S","debtToAssets_S","currentRatio_S","payoutRatio_S",
 "roe_S","roic_S","investedCapital_S","price","FuturePrice"])
-StockTotal_filtered.to_csv (r"C:\\Users\\DELPILL2\\OneDrive - EY\\Documents\\Privat\\Python\\Sample\\StockKpi\\merge_v1.csv", index = None)
 
-print(StockTotal_filtered)
+
+
+#StockTotal_filtered.to_csv (r"C:\\Users\\DELPILL2\\OneDrive - EY\\Documents\\Privat\\Python\\Sample\\StockKpi\\TotalData.csv", index = None)
+res = StockTotal_filtered[~(StockTotal_filtered['date_new'] < '2010-01-01')]
+res.to_csv (r"C:\\Users\\DELPILL2\\OneDrive - EY\\Documents\\Privat\\Python\\Sample\\StockKpi\\TotalData.csv", index = None)
+
+print(res)
 
 
